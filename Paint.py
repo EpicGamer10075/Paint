@@ -24,28 +24,72 @@ def main():
             done = True
 
       curr_pos = pygame.mouse.get_pos()
-      if pygame.mouse.get_pressed(3)[0]: #Detect clicks on colour swatches
-         if 10 < curr_pos[0] < 40 and 10 < curr_pos[1] < 40:
-            pen_colour = (255,0,0)
-         elif 50 < curr_pos[0] < 80 and 10 < curr_pos[1] < 40:
-            pen_colour = (0,255,0)
-         elif 90 < curr_pos[0] < 120 and 10 < curr_pos[1] < 40:
-            pen_colour = (0,0,255)
-         elif wWidth-40 < curr_pos[0] < wWidth-10 and 10 < curr_pos[1] < 40:
-            screen.fill((255,255,255))
-         else:
+
+      if pygame.mouse.get_pressed(3)[0]: #Detect click on main canvas
+         if curr_pos[1] > 40: #In main canvas space (+ some buffer)
             pygame.draw.circle(screen, pen_colour, pygame.mouse.get_pos(), 4)
             pygame.draw.line(screen, pen_colour, prev_pos, pygame.mouse.get_pos(), 10)
+            
       prev_pos = pygame.mouse.get_pos()
       
       #Draw the toolbar at the top, after, and thus over the paint lines
       pygame.draw.rect(screen, (127,127,127), [0,0,wWidth,50])
 
+      if 10 < curr_pos[1] < 40:                               #Detect if cursor in toolbar (specifically on the swatches Y-pos)
+         #Red swatch
+         if 10 < curr_pos[0] < 40:
+            if pygame.mouse.get_pressed(3)[0]:                    #Detect if left-mouse-button is clicked
+               pygame.draw.rect(screen, (0,0,0), [6,6,38,38], 8)    #Draw thick bound on swatch
+               pen_colour = (255,0,0)                               #Change pen colour to Red
+            else:
+               pygame.draw.rect(screen, (0,0,0), [8,8,34,34], 4)    #Draw thin bound on swatch
+
+         #Green swatch
+         elif 50 < curr_pos[0] < 80:
+            if pygame.mouse.get_pressed(3)[0]:
+               pygame.draw.rect(screen, (0,0,0), [46,6,38,38], 8)
+               pen_colour = (0,255,0)
+            else:
+               pygame.draw.rect(screen, (0,0,0), [48,8,34,34], 4)
+
+         #Blue swatch
+         elif 90 < curr_pos[0] < 120:
+            if pygame.mouse.get_pressed(3)[0]:
+               pygame.draw.rect(screen, (0,0,0), [86,6,38,38], 8)
+               pen_colour = (0,0,255)
+            else:
+               pygame.draw.rect(screen, (0,0,0), [88,8,34,34], 4)
+         
+         #Black swatch
+         elif 130 < curr_pos[0] < 160:
+            if pygame.mouse.get_pressed(3)[0]:
+               pygame.draw.rect(screen, (63,63,63), [126,6,38,38], 8)
+               pen_colour = (0,0,0)
+            else:
+               pygame.draw.rect(screen, (63,63,63), [128,8,34,34], 4)
+         
+         #Clear button
+         elif wWidth-90 < curr_pos[0] < wWidth-10:
+            if pygame.mouse.get_pressed(3)[0]:
+               screen.fill((255,255,255))
+               pygame.draw.rect(screen, (127,127,127), [0,0,wWidth,50])
+               pygame.draw.rect(screen, (255,255,255), [wWidth-94,6,88,38], 8)
+            else:
+               pygame.draw.rect(screen, (255,255,255), [wWidth-92,8,84,34], 4)
+
       #Colour swatches; click on one to change the pen to that colour
-      pygame.draw.rect(screen, (255,0,0), [10,10,30,30])
-      pygame.draw.rect(screen, (0,255,0), [50,10,30,30])
-      pygame.draw.rect(screen, (0,0,255), [90,10,30,30])
-      pygame.draw.rect(screen, (255,255,255), [wWidth-40,10,30,30], 4)
+      pygame.draw.rect(screen, (255,0,0), [10, 10,30,30])
+      pygame.draw.rect(screen, (0,255,0), [50, 10,30,30])
+      pygame.draw.rect(screen, (0,0,255), [90, 10,30,30])
+      pygame.draw.rect(screen, (0, 0, 0), [130,10,30,30])
+
+      #Clear button: click to wipe canvas
+      pygame.draw.rect(screen, (255,255,255), [wWidth-90,10,80,30], 4)
+      font = pygame.font.SysFont('arialblack', 18)
+      text = font.render('CLEAR', True, (255,255,255), None)
+      textRect = text.get_rect()
+      textRect.center = (wWidth-50, 25)
+      screen.blit(text, textRect)
 
       #Finish the drawing for this frame
       pygame.display.flip()
